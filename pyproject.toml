@@ -1,0 +1,13 @@
+[project]
+name = "browser-organiser"
+version = "0.1.0"
+description = "MCP server for organizing Microsoft Edge browser bookmarks with AI and rule-based categorization"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=1.21.1",
+    "pydantic>=2.11.7",
+    "python-dotenv>=1.2.1",
+    "psutil>=6.1.1",
+    "pyyaml>=6.0.2",
+]

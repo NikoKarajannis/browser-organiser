@@ -1,0 +1,238 @@
+# Browser Organiser - Category Definitions
+#
+# This file defines the rules and categories for organizing bookmarks.
+# Categories are checked in order of priority (highest first).
+
+categories:
+  # Development Categories
+  - name: Development/GitHub
+    priority: 10
+    ai_description: "GitHub repositories, code hosting, version control, open source projects, gists"
+    rules:
+      - domain: github.com
+      - domain: gist.github.com
+
+  - name: Development/StackOverflow
+    priority: 9
+    ai_description: "Programming Q&A, troubleshooting, code solutions, Stack Exchange sites"
+    rules:
+      - domain: stackoverflow.com
+      - domain: stackexchange.com
+      - domain: serverfault.com
+      - domain: superuser.com
+      - domain: askubuntu.com
+
+  - name: Development/Documentation
+    priority: 8
+    ai_description: "Technical documentation, API references, programming guides, language docs"
+    rules:
+      - url_contains: /docs/
+      - url_contains: /documentation/
+      - url_contains: /api/
+      - domain_pattern: "*.readthedocs.io"
+      - domain: developer.mozilla.org
+      - domain: docs.python.org
+      - domain: doc.rust-lang.org
+
+  - name: Development/Tools
+    priority: 7
+    ai_description: "Developer tools, online utilities, formatters, validators, converters"
+    rules:
+      - domain: regex101.com
+      - domain: jsonlint.com
+      - domain: codebeautify.org
+      - domain: replit.com
+      - domain: codesandbox.io
+      - domain: jsfiddle.net
+      - domain: codepen.io
+      - keywords: [converter, formatter, validator, beautifier]
+
+  - name: Development/NPM-Packages
+    priority: 7
+    ai_description: "NPM packages, Node.js modules, JavaScript libraries"
+    rules:
+      - domain: npmjs.com
+      - domain: www.npmjs.com
+
+  - name: Development/PyPI
+    priority: 7
+    ai_description: "Python packages, PyPI, Python libraries"
+    rules:
+      - domain: pypi.org
+
+  # Learning & Education
+  - name: Learning/Tutorials
+    priority: 6
+    ai_description: "Educational content, tutorials, courses, learning materials, how-to guides"
+    rules:
+      - keywords: [tutorial, learn, course, guide, how-to, lesson, training]
+      - domain: udemy.com
+      - domain: coursera.org
+      - domain: freecodecamp.org
+      - domain: khanacademy.org
+      - domain: codecademy.com
+      - domain: pluralsight.com
+      - domain: egghead.io
+
+  - name: Learning/Blog-Articles
+    priority: 5
+    ai_description: "Technical blog posts, articles, programming insights"
+    rules:
+      - domain: medium.com
+      - domain: dev.to
+      - domain: hashnode.com
+      - url_contains: /blog/
+      - keywords: [blog, article]
+
+  # Media & Entertainment
+  - name: Media/Video
+    priority: 5
+    ai_description: "Video streaming, video content platforms, YouTube, Vimeo"
+    rules:
+      - domain: youtube.com
+      - domain: youtu.be
+      - domain: vimeo.com
+      - domain: twitch.tv
+
+  - name: Media/Music
+    priority: 5
+    ai_description: "Music streaming, audio platforms, podcasts"
+    rules:
+      - domain: spotify.com
+      - domain: soundcloud.com
+      - domain: music.youtube.com
+      - domain: podcasts.apple.com
+
+  # Social & Professional
+  - name: Social/Professional
+    priority: 5
+    ai_description: "Professional networking, LinkedIn, career-related social media"
+    rules:
+      - domain: linkedin.com
+
+  - name: Social/Twitter
+    priority: 5
+    ai_description: "Twitter, X, social media posts, tweets"
+    rules:
+      - domain: twitter.com
+      - domain: x.com
+
+  - name: Social/Reddit
+    priority: 5
+    ai_description: "Reddit posts, subreddits, community discussions"
+    rules:
+      - domain: reddit.com
+      - domain: www.reddit.com
+
+  - name: Social/Facebook
+    priority: 5
+    ai_description: "Facebook, Meta, social networking"
+    rules:
+      - domain: facebook.com
+      - domain: fb.com
+
+  # Shopping & Commerce
+  - name: Shopping/Amazon
+    priority: 4
+    ai_description: "Amazon products, online shopping, e-commerce"
+    rules:
+      - domain: amazon.com
+      - domain: amazon.de
+      - domain: amazon.co.uk
+      - domain_pattern: "amazon.*"
+
+  - name: Shopping/General
+    priority: 4
+    ai_description: "E-commerce, online shopping, product pages, retail"
+    rules:
+      - domain: ebay.com
+      - domain: etsy.com
+      - domain: aliexpress.com
+      - keywords: [shop, store, buy, cart, product, price]
+
+  # News & Information
+  - name: News/Tech-News
+    priority: 4
+    ai_description: "Technology news, tech journalism, industry updates"
+    rules:
+      - domain: techcrunch.com
+      - domain: theverge.com
+      - domain: arstechnica.com
+      - domain: wired.com
+      - domain: hackernews.com
+      - domain: news.ycombinator.com
+
+  - name: News/General
+    priority: 4
+    ai_description: "News articles, journalism, current events, news websites"
+    rules:
+      - domain_pattern: "*.news"
+      - domain: bbc.com
+      - domain: reuters.com
+      - domain: cnn.com
+      - domain: theguardian.com
+      - keywords: [news, breaking, latest]
+
+  # Productivity & Tools
+  - name: Productivity/Cloud-Storage
+    priority: 5
+    ai_description: "Cloud storage, file hosting, Google Drive, Dropbox"
+    rules:
+      - domain: drive.google.com
+      - domain: dropbox.com
+      - domain: onedrive.live.com
+      - domain: box.com
+
+  - name: Productivity/Note-Taking
+    priority: 5
+    ai_description: "Note-taking apps, Notion, Obsidian, Evernote"
+    rules:
+      - domain: notion.so
+      - domain: evernote.com
+      - domain: obsidian.md
+      - domain: roamresearch.com
+
+  - name: Productivity/Project-Management
+    priority: 5
+    ai_description: "Project management, task tracking, Trello, Asana, Jira"
+    rules:
+      - domain: trello.com
+      - domain: asana.com
+      - domain: atlassian.net
+      - domain: jira.atlassian.com
+      - domain: monday.com
+
+  # Design & Creative
+  - name: Design/Design-Tools
+    priority: 5
+    ai_description: "Design tools, Figma, Adobe, graphic design platforms"
+    rules:
+      - domain: figma.com
+      - domain: canva.com
+      - domain: adobe.com
+      - domain: dribbble.com
+      - domain: behance.net
+
+  - name: Design/Stock-Resources
+    priority: 4
+    ai_description: "Stock photos, icons, fonts, design resources"
+    rules:
+      - domain: unsplash.com
+      - domain: pexels.com
+      - domain: flaticon.com
+      - domain: fonts.google.com
+      - keywords: [stock, icon, font, illustration]
+
+  # Reference & Research
+  - name: Reference/Wikipedia
+    priority: 6
+    ai_description: "Wikipedia, encyclopedic content, general knowledge"
+    rules:
+      - domain: wikipedia.org
+      - domain_pattern: "*.wikipedia.org"
+
+  - name: Reference/General
+    priority: 4
+    ai_description: "Reference materials, dictionaries, encyclopedias, research"
+    rules:
+      - keywords: [reference, dictionary, encyclopedia, glossary]
