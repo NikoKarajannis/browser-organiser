@@ -28,17 +28,6 @@ Usage:
     python server.py [stdio|sse|http]
 """
 
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "mcp[cli]>=1.21.1",
-#     "pydantic>=2.11.7",
-#     "python-dotenv>=1.2.1",
-#     "psutil>=6.1.1",
-#     "pyyaml>=6.0.2",
-# ]
-# ///
-
 from mcp.server.fastmcp import FastMCP
 from src.service import BrowserCleanerService
 import json
@@ -250,7 +239,6 @@ def get_uncategorized(limit: int = 100) -> str:
         for bm in bookmarks
     ]
 
-    import json
     return json.dumps(result, indent=2)
 
 
@@ -310,7 +298,6 @@ def get_all_bookmarks() -> str:
         for bm in bookmarks
     ]
 
-    import json
     return json.dumps(result, indent=2)
 
 
@@ -403,7 +390,6 @@ def get_bookmarks_by_folder(folder_path: str) -> str:
         for bm in bookmarks
     ]
 
-    import json
     return json.dumps({"folder": folder_path, "count": len(result), "bookmarks": result}, indent=2)
 
 
