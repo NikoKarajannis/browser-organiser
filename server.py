@@ -7,11 +7,22 @@ The server uses the FastMCP framework to provide tools for organizing
 Microsoft Edge browser bookmarks using AI and rule-based categorization.
 
 Tools:
+
+Organization Tools:
 - get_bookmark_overview: Get statistics and overview of bookmarks
 - analyze_bookmarks: Analyze bookmarks and suggest categorization
 - organize_bookmarks: Execute bookmark organization with safety checks
 - search_bookmarks: Search bookmarks by query
 - get_uncategorized: List uncategorized bookmarks
+
+Knowledge Base Tools (NEW):
+- get_all_bookmarks: Access all bookmarks for semantic analysis
+- get_bookmarks_by_category: Filter bookmarks by category
+- get_bookmarks_by_folder: Get bookmarks from specific folder
+
+The knowledge base tools allow Claude to use your bookmarks as a
+queryable knowledge base during your work. Claude can semantically
+search and recommend relevant resources based on your current context.
 
 Usage:
     python server.py [stdio|sse|http]
@@ -30,6 +41,7 @@ Usage:
 
 from mcp.server.fastmcp import FastMCP
 from src.service import BrowserCleanerService
+import json
 
 # Initialize FastMCP server
 mcp = FastMCP(
@@ -240,6 +252,160 @@ def get_uncategorized(limit: int = 100) -> str:
 
     import json
     return json.dumps(result, indent=2)
+
+
+# ============================================================================
+# Knowledge Base Tools - Access bookmarks as a queryable knowledge base
+# ============================================================================
+
+@mcp.tool()
+def get_all_bookmarks() -> str:
+    """
+    Get ALL bookmarks with full metadata for semantic analysis.
+
+    This tool provides complete access to the user's bookmark collection.
+    Use this when the user asks you to find relevant resources, research
+    a topic, or reference bookmarks related to their current work.
+
+    Claude can then use its semantic understanding to find relevant bookmarks
+    based on the user's context, without needing keyword matching.
+
+    Returns:
+        JSON string with array of all bookmarks, each containing:
+        - name: Bookmark title
+        - url: Full URL
+        - current_folder: Current location in bookmark structure
+        - suggested_category: Auto-detected category (if matched)
+        - date_added: When bookmark was created
+
+    Example Usage:
+        User: "I'm working on Docker networking. Check my bookmarks."
+        Claude: Calls get_all_bookmarks(), analyzes them semantically,
+                returns relevant Docker/networking resources.
+
+    Example Response:
+        [
+          {
+            "name": "Docker Networking Deep Dive",
+            "url": "https://docs.docker.com/network/",
+            "current_folder": "Other favorites",
+            "suggested_category": "Development/Documentation",
+            "date_added": "2024-03-15T10:20:00"
+          },
+          ...
+        ]
+    """
+    service = _get_service()
+    bookmarks = service.get_all_bookmarks()
+
+    # Convert to simple dict format for Claude
+    result = [
+        {
+            "name": bm.name,
+            "url": str(bm.url),
+            "current_folder": bm.current_folder or "Root",
+            "suggested_category": bm.suggested_category,
+            "date_added": bm.date_added.isoformat() if bm.date_added else None,
+        }
+        for bm in bookmarks
+    ]
+
+    import json
+    return json.dumps(result, indent=2)
+
+
+@mcp.tool()
+def get_bookmarks_by_category(category: str) -> str:
+    """
+    Get bookmarks matching a specific category.
+
+    Use this to narrow down bookmarks to a relevant domain before
+    semantic analysis. More efficient than get_all_bookmarks() when
+    you know the general topic area.
+
+    Args:
+        category: Category name or prefix
+                 Examples:
+                 - "Development" (matches all Development/* categories)
+                 - "Development/GitHub" (exact match)
+                 - "Learning" (matches Learning/Tutorials, Learning/Blog-Articles, etc.)
+                 - "Media" (matches Media/Video, Media/Music, etc.)
+
+    Available top-level categories:
+        - Development (GitHub, Docs, Tools, NPM, PyPI, StackOverflow)
+        - Learning (Tutorials, Blog-Articles)
+        - Media (Video, Music)
+        - Social (Professional, Twitter, Reddit, Facebook)
+        - Shopping (Amazon, General)
+        - News (Tech-News, General)
+        - Productivity (Cloud-Storage, Note-Taking, Project-Management)
+        - Design (Design-Tools, Stock-Resources)
+        - Reference (Wikipedia, General)
+
+    Returns:
+        JSON array of matching bookmarks with metadata
+
+    Example Usage:
+        User: "Find resources about Python in my bookmarks"
+        Claude: Calls get_bookmarks_by_category("Development"),
+                then semantically filters for Python-related content
+    """
+    service = _get_service()
+    bookmarks = service.get_bookmarks_by_category(category)
+
+    result = [
+        {
+            "name": bm.name,
+            "url": str(bm.url),
+            "current_folder": bm.current_folder or "Root",
+            "suggested_category": bm.suggested_category,
+            "confidence": bm.confidence,
+            "date_added": bm.date_added.isoformat() if bm.date_added else None,
+        }
+        for bm in bookmarks
+    ]
+
+    return json.dumps({"category": category, "count": len(result), "bookmarks": result}, indent=2)
+
+
+@mcp.tool()
+def get_bookmarks_by_folder(folder_path: str) -> str:
+    """
+    Get bookmarks from a specific folder in the bookmark structure.
+
+    Use this when you want to access bookmarks from the user's actual
+    folder organization (as opposed to auto-detected categories).
+
+    Args:
+        folder_path: Folder path or partial name
+                    Examples:
+                    - "Bookmarks bar" (top-level folder)
+                    - "Development" (partial match)
+                    - "Other favorites" (Edge's default folder)
+
+    Returns:
+        JSON array of bookmarks in that folder
+
+    Example Usage:
+        User: "Show me what's in my Development folder"
+        Claude: Calls get_bookmarks_by_folder("Development")
+    """
+    service = _get_service()
+    bookmarks = service.get_bookmarks_by_folder(folder_path)
+
+    result = [
+        {
+            "name": bm.name,
+            "url": str(bm.url),
+            "current_folder": bm.current_folder,
+            "date_added": bm.date_added.isoformat() if bm.date_added else None,
+        }
+        for bm in bookmarks
+    ]
+
+    import json
+    return json.dumps({"folder": folder_path, "count": len(result), "bookmarks": result}, indent=2)
+
 
 if __name__ == "__main__":
     import sys

@@ -343,6 +343,99 @@ class BrowserCleanerService:
 
         return uncategorized
 
+    # Knowledge Base Methods - for Claude to access bookmark data
+
+    def get_all_bookmarks(self) -> list[Bookmark]:
+        """
+        Get all bookmarks with full metadata.
+
+        This provides complete access to all bookmarks for Claude to analyze
+        and find relevant resources based on the user's current context.
+
+        Returns:
+            List of all Bookmark objects with title, URL, folder, and dates
+        """
+        roots = parse_bookmarks_file(self.bookmarks_path)
+        all_bookmarks = get_all_bookmarks_flat(roots)
+
+        # Optionally categorize them for additional context
+        for bookmark in all_bookmarks:
+            result = self.categorizer.categorize(bookmark)
+            if result:
+                bookmark.suggested_category = result.category
+                bookmark.confidence = result.confidence
+                bookmark.categorization_method = result.method
+
+        return all_bookmarks
+
+    def get_bookmarks_by_category(self, category: str) -> list[Bookmark]:
+        """
+        Get all bookmarks matching a specific category.
+
+        Args:
+            category: Category name (e.g., "Development/GitHub", "Development")
+                     If no slash, matches all categories starting with that prefix
+
+        Returns:
+            List of Bookmark objects in that category
+        """
+        roots = parse_bookmarks_file(self.bookmarks_path)
+        all_bookmarks = get_all_bookmarks_flat(roots)
+
+        matching_bookmarks = []
+
+        for bookmark in all_bookmarks:
+            # First check if already in a folder matching the category
+            if bookmark.current_folder:
+                if category in bookmark.current_folder:
+                    matching_bookmarks.append(bookmark)
+                    continue
+
+            # Otherwise categorize and check
+            result = self.categorizer.categorize(bookmark)
+            if result:
+                # Handle both exact match and prefix match
+                if '/' in category:
+                    # Exact match (e.g., "Development/GitHub")
+                    if result.category == category:
+                        bookmark.suggested_category = result.category
+                        bookmark.confidence = result.confidence
+                        bookmark.categorization_method = result.method
+                        matching_bookmarks.append(bookmark)
+                else:
+                    # Prefix match (e.g., "Development" matches "Development/*")
+                    if result.category.startswith(category):
+                        bookmark.suggested_category = result.category
+                        bookmark.confidence = result.confidence
+                        bookmark.categorization_method = result.method
+                        matching_bookmarks.append(bookmark)
+
+        return matching_bookmarks
+
+    def get_bookmarks_by_folder(self, folder_path: str) -> list[Bookmark]:
+        """
+        Get bookmarks from a specific folder in the bookmark structure.
+
+        Args:
+            folder_path: Folder path (e.g., "Bookmarks bar/Development")
+                        or partial match (e.g., "Development")
+
+        Returns:
+            List of Bookmark objects in that folder
+        """
+        roots = parse_bookmarks_file(self.bookmarks_path)
+        all_bookmarks = get_all_bookmarks_flat(roots)
+
+        matching_bookmarks = []
+
+        for bookmark in all_bookmarks:
+            if bookmark.current_folder:
+                # Support both exact match and partial match
+                if folder_path.lower() in bookmark.current_folder.lower():
+                    matching_bookmarks.append(bookmark)
+
+        return matching_bookmarks
+
     def _create_folder_structure(self, data: dict, folder_paths: list[str]) -> int:
         """
         Create folder structure in bookmarks data.
