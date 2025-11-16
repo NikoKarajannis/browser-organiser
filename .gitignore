@@ -19,9 +19,9 @@ src/.env
 backups/
 *.backup.*
 
-# Test files
-test_*.py
-*_test.py
+# Test files (exclude at root, but include tests/ directory)
+/test_*.py
+/*_test.py
 
 # IDE
 .vscode/
