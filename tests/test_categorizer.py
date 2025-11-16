@@ -3,6 +3,10 @@
 Test script for rule-based categorizer.
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from datetime import datetime
 from src.categorizers.rule_categorizer import RuleCategorizer
 from src.models import Bookmark

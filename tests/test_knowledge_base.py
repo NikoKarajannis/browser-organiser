@@ -6,6 +6,10 @@ This tests the new tools that allow Claude to access bookmarks
 as a queryable knowledge base.
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from datetime import datetime
 from src.service import BrowserCleanerService
 from src.models import Bookmark, Folder
